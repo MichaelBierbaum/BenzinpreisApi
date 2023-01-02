@@ -4,22 +4,27 @@
 #include <string>
 using std::string;
 
-#include "TankstellenInfo.h"
-#include "credentials.h"
+#include "GasStationInfo.h"
 
+// Key für den Zugriff auf die freie Tankerkoenig-Spritpreis-API
+// Fuer eigenen Key bitte hier https://creativecommons.tankerkoenig.de
+// registrieren.
 class TankerkoenigWrapper
 {
 private:
-    TankstellenInfo tankstelle;
-    string key = tankerkoenig_api_key;
+    GasStationInfo gasStation;//tankstelle
+    string key;
+    string GetJson();
+    bool ParseJson(string jsonData);
 
 public:
     enum Spritsorte{e5, e10, diesel, all};
     string Sorten[4] = {"e5", "e10", "diesel", "all"};
-    TankerkoenigWrapper(TankstellenInfo &tankstelle);
+    TankerkoenigWrapper(GasStationInfo &gasStation, const char *tankerkoenig_api_key);
     ~TankerkoenigWrapper();
-    string CreateUmkreissuche(Spritsorte type = all);
-    string CreateDetailabfrage();
+    string CreateUrlForRadiusSearch(Spritsorte type = all);
+    string CreateUrlForDetailrequest();
+    bool UpdatePrices();
 };
 
 

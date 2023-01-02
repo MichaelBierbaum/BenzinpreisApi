@@ -1,6 +1,6 @@
-#include "TankstellenInfo.h"
+#include "GasStationInfo.h"
 
-TankstellenInfo::TankstellenInfo(        
+GasStationInfo::GasStationInfo(        
         string id,
         string name,
         string brand,
@@ -23,7 +23,7 @@ TankstellenInfo::TankstellenInfo(
     this->postCode = postCode;
 }
 
-TankstellenInfo::TankstellenInfo(const TankstellenInfo &src)
+GasStationInfo::GasStationInfo(const GasStationInfo &src)
 {
     this->id = src.id;
     this->name = src.name;
@@ -41,6 +41,6 @@ TankstellenInfo::TankstellenInfo(const TankstellenInfo &src)
     this->postCode = src.postCode;
 }
 
-TankstellenInfo::~TankstellenInfo()
+GasStationInfo::~GasStationInfo()
 {
 }
