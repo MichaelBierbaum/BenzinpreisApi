@@ -36,7 +36,9 @@ void setup(void)
   setup_OLED();
   setupTaster();
   startWiFi();
-  tankerkoenig.UpdatePrices();
+
+  UpdatePrices();
+
   delay(1000);
   Serial.print("setup abgeschlossen");
 }
@@ -73,8 +75,17 @@ void OnPushButton()
   if (!tasterGedrueckt)
   {
     tasterGedrueckt = true;
-    tankerkoenig.UpdatePrices();
+    UpdatePrices();
   }
+}
+
+void UpdatePrices()
+{
+  Serial.println(tankerkoenig.CreateUrlForDetailrequest().c_str()); return;
+
+  string jsonData = tankerkoenig.GetJson();
+  Serial.println(jsonData.c_str());
+  tankerkoenig.UpdatePrices(jsonData);
 }
 
 void startWiFi()

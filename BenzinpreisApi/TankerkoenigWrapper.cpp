@@ -5,22 +5,33 @@
 char buff[200];
 
 #include <HTTPClient.h>
-string payload = "";
 HTTPClient http;
 
 string TankerkoenigWrapper::GetJson()
 {
+    string jsonData = "E";
     string url = CreateUrlForDetailrequest();
-    string jsonData;
+    http.begin(url.c_str());
+    int httpCode = http.GET();
+    if(httpCode == 200){
+        jsonData = http.getString().c_str();
+    }
+    http.end();
+
     return jsonData;
 }
 
-bool TankerkoenigWrapper::ParseJson(string jsonData)
+bool TankerkoenigWrapper::ParseJson(string &jsonData)
 {
     if(/*jsonData != OK*/false)
         return false;
 
     return true;
+}
+
+bool TankerkoenigWrapper::UpdatePrices(string &jsonData)
+{
+    return ParseJson(jsonData);
 }
 
 TankerkoenigWrapper::TankerkoenigWrapper(GasStationInfo &gasStation, const char *tankerkoenig_api_key)
@@ -57,13 +68,7 @@ string TankerkoenigWrapper::CreateUrlForDetailrequest()
     //return "https://creativecommons.tankerkoenig.de/json/detail.php?id=24a381e3-0d72-416d-bfd8-b2f65f6e5802&apikey=00000000-0000-0000-0000-000000000002";
     snprintf(buff, sizeof(buff),
         "https://creativecommons.tankerkoenig.de/json/detail.php?id=%s&apikey=%s",
-        id,
-        key);
+        id.c_str(),
+        key.c_str());
     return buff;
-}
-
-bool TankerkoenigWrapper::UpdatePrices()
-{
-    string jsonData = GetJson();
-    return ParseJson(jsonData);
 }
