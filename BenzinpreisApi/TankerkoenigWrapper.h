@@ -12,7 +12,7 @@ using std::string;
 class TankerkoenigWrapper
 {
 private:
-    GasStationInfo gasStations[3];//tankstelle
+    GasStationInfo gasStations[3];//tankstellen
     string key;
     bool ParseJsonForDetailrequest(string &jsonData);
     bool ParseJsonForPrices(string &jsonData);
