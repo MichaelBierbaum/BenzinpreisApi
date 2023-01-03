@@ -25,6 +25,7 @@ GasStationInfo::GasStationInfo(
 
 GasStationInfo::GasStationInfo(const GasStationInfo &src)
 {
+    this->status = src.status.c_str();
     this->id = src.id.c_str();
     this->name = src.name.c_str();
     this->brand = src.brand.c_str();

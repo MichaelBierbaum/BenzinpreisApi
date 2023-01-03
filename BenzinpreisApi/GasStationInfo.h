@@ -9,6 +9,7 @@ using std::string;
 class GasStationInfo
 {
 private:
+    string status;
     string id;
     string name;
     string brand;
