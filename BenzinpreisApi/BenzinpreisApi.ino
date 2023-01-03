@@ -1,4 +1,4 @@
-#include <U8g2lib.h>
+#include <U8g2lib.h> //https://github.com/olikraus/u8g2/wiki/u8g2reference
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
 u8g2_uint_t offset;
 
@@ -12,6 +12,7 @@ Pos *pos;
 TankerkoenigWrapper tankerkoenig(tankerkoenig_api_key);
 
 const int BUTTON_PIN = 18;
+int displayHeight = 0, displayWidth = 0;
 volatile bool tasterGedrueckt = false;
 
 void setup(void)
@@ -46,7 +47,8 @@ void setup_OLED()
   u8g2.begin();
   //u8g2.setFont(u8g2_font_logisoso32_tf);
   u8g2.setFont(u8g2_font_6x10_tf);
-  int displayHeight = u8g2.getDisplayHeight();
+  displayHeight = u8g2.getDisplayHeight();
+  displayWidth = u8g2.getDisplayWidth();
   Serial.print("displayHeight: "); Serial.println(displayHeight);
   pos = new Pos(0, 0, displayHeight);
 }
@@ -78,7 +80,7 @@ void UpdatePrices()
   string jsonData = tankerkoenig.GetJsonForUrl(url.c_str());
   Serial.println(jsonData.c_str());
   tankerkoenig.ParseJsonForPrices(jsonData);
-  Serial.println(tankerkoenig.PrintPrices());
+  Serial.println(tankerkoenig.PrintPrices(displayWidth));
 }
 
 

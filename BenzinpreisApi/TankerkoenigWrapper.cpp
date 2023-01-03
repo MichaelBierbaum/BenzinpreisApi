@@ -43,10 +43,9 @@ GasStationInfo Herm(
 #include <stdio.h>//fuer snprintf
 #include <string.h>//fuer strcmp
 
-char buff[300];
-
 #include <HTTPClient.h>
 HTTPClient http;
+char buffUrl[300];
 
 #include <ArduinoJson.h>
 
@@ -134,13 +133,13 @@ string TankerkoenigWrapper::CreateUrlForPrices()
 {
     //example:
     //return https://creativecommons.tankerkoenig.de/json/prices.php?ids=4429a7d9-fb2d-4c29-8cfe-2ca90323f9f8,446bdcf5-9f75-47fc-9cfa-2c3d6fda1c3b,60c0eefa-d2a8-4f5c-82cc-b5244ecae955,44444444-4444-4444-4444-444444444444&apikey=00000000-0000-0000-0000-000000000002;
-    snprintf(buff, sizeof(buff),
+    snprintf(buffUrl, sizeof(buffUrl),
         "https://creativecommons.tankerkoenig.de/json/prices.php?ids=%s,%s,%s&apikey=%s",
         ID_Gaukoenigshofen_ZG,
         ID_Ochsenfurt_ECenter,
         ID_Giebelstadt_Herm,
         key.c_str());
-    return buff;
+    return buffUrl;
 }
 
 TankerkoenigWrapper::TankerkoenigWrapper(const char *tankerkoenig_api_key)
@@ -164,7 +163,7 @@ string TankerkoenigWrapper::CreateUrlForRadiusSearch(Spritsorte type, double rad
     
     double lat = gasStations[0].GetLat();
     double lng = gasStations[0].GetLng();
-    snprintf(buff, sizeof(buff), 
+    snprintf(buffUrl, sizeof(buffUrl), 
         "https://creativecommons.tankerkoenig.de/json/list.php?lat=%f&lng=%f&rad=%f&sort=%s&type=%s&apikey=%s",
         lat,
         lng,
@@ -172,7 +171,7 @@ string TankerkoenigWrapper::CreateUrlForRadiusSearch(Spritsorte type, double rad
         "dist", //price, dist
         Sorten[type].c_str(),
         key.c_str());
-    return buff;
+    return buffUrl;
 }
 
 //request for one special gas station
@@ -192,14 +191,20 @@ string TankerkoenigWrapper::CreateUrlForDetailrequest(const char *gasStationID)
 
     //example:
     //return "https://creativecommons.tankerkoenig.de/json/detail.php?id=24a381e3-0d72-416d-bfd8-b2f65f6e5802&apikey=00000000-0000-0000-0000-000000000002";
-    snprintf(buff, sizeof(buff),
+    snprintf(buffUrl, sizeof(buffUrl),
         "https://creativecommons.tankerkoenig.de/json/detail.php?id=%s&apikey=%s",
         id,
         key.c_str());
-    return buff;
+    return buffUrl;
 }
 
-const char* TankerkoenigWrapper::PrintPrices()
+const char* TankerkoenigWrapper::PrintPrices(int displayWidth)
 {
-    return "TankerkoenigWrapper::PrintPrices()";
+    char line[displayWidth];
+    snprintf(line, displayWidth,
+        "%s\n%10s: %1.4f\n%10s: %1.4f",
+        gasStations[0].PrintName(),
+        "e5", gasStations[0].e5,
+        "diesel", gasStations[0].diesel);
+    return line;
 }

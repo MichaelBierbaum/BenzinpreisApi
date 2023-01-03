@@ -31,6 +31,7 @@ public:
     double GetLat(){return lat;}
     double GetLng(){return lng;}
     string GetId(){return id;}
+    const char* PrintName();
     
     GasStationInfo(
         string id = "",

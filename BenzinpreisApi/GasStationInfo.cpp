@@ -1,16 +1,20 @@
 #include "GasStationInfo.h"
 
-GasStationInfo::GasStationInfo(        
-        string id,
-        string name,
-        string brand,
-        string street,
-        string place,
-        double lat,
-        double lng,
-        string houseNumber,
-        int postCode
-        )
+const char *GasStationInfo::PrintName()
+{
+    return this->name.c_str();
+}
+
+GasStationInfo::GasStationInfo(
+    string id,
+    string name,
+    string brand,
+    string street,
+    string place,
+    double lat,
+    double lng,
+    string houseNumber,
+    int postCode)
 {
     this->id = id;
     this->name = name;
