@@ -102,6 +102,17 @@ bool TankerkoenigWrapper::ParseJsonForDetailrequest(string &jsonData)
     return true;
 }
 
+void ParseJsonForPricesForItem(JsonObject& prices, GasStationInfo &gasStation)
+{
+    const char* id = gasStation.GetId().c_str();
+
+    JsonObject& pricesItemId = prices[id];
+    gasStation.status = (const char*) pricesItemId["status"]; // "open"
+    gasStation.e5 = pricesItemId["e5"]; // 1.759
+    gasStation.e10 = pricesItemId["e10"]; // 1.699
+    gasStation.diesel = pricesItemId["diesel"]; // 1.809
+}
+
 bool TankerkoenigWrapper::ParseJsonForPrices(string &jsonData)
 {
     const size_t capacity = JSON_OBJECT_SIZE(3) + 4*JSON_OBJECT_SIZE(4) + 370;
@@ -116,24 +127,8 @@ bool TankerkoenigWrapper::ParseJsonForPrices(string &jsonData)
     const char* data = root["data"]; // "MTS-K"
 
     JsonObject& prices = root["prices"];
-
-    JsonObject& pricesItem1 = prices["932a8c52-ef25-40b8-8d7a-ad323bb78e0d"];
-    const char* pricesItem1_status = pricesItem1["status"]; // "open"
-    float pricesItem1_e5 = pricesItem1["e5"]; // 1.759
-    float pricesItem1_e10 = pricesItem1["e10"]; // 1.699
-    float pricesItem1_diesel = pricesItem1["diesel"]; // 1.809
-
-    JsonObject& pricesItem2 = prices["2599dfbd-54c1-473d-a0df-a1538ba120b6"];
-    const char* pricesItem2_status = pricesItem2["status"]; // "open"
-    float pricesItem2_e5 = pricesItem2["e5"]; // 1.769
-    float pricesItem2_e10 = pricesItem2["e10"]; // 1.719
-    float pricesItem2_diesel = pricesItem2["diesel"]; // 1.829
-
-    JsonObject& pricesItem3 = prices["2de4b5a8-b37e-4c39-9de9-e0564a432721"];
-    const char* pricesItem3_status = pricesItem3["status"]; // "open"
-    float pricesItem3_e5 = pricesItem3["e5"]; // 1.789
-    float pricesItem3_e10 = pricesItem3["e10"]; // 1.729
-    float pricesItem3_diesel = pricesItem3["diesel"]; // 1.839
+    for(int i = 0; i < DimGasStations; ++i)
+        ParseJsonForPricesForItem(prices, gasStations[i]);
 }
 bool TankerkoenigWrapper::UpdatePrices(string &jsonData)
 {

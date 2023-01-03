@@ -9,7 +9,6 @@ using std::string;
 class GasStationInfo
 {
 private:
-    string status;
     string id;
     string name;
     string brand;
@@ -18,12 +17,15 @@ private:
     double lat;//geographische Breite
     double lng;//geographische Laenge
     double dist;//Umkreis
+    string houseNumber;
+    int postCode;//PLZ
+    
+public:
+    string status;    
     double diesel;//Preis in EUR
     double e5;//Preis in EUR
     double e10;//Preis in EUR
     bool isOpen;
-    string houseNumber;
-    int postCode;//PLZ
     
 public:
     double GetLat(){return lat;}

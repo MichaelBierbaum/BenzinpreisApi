@@ -6,13 +6,15 @@ using std::string;
 
 #include "GasStationInfo.h"
 
+const int DimGasStations = 3;
+
 // Key für den Zugriff auf die freie Tankerkoenig-Spritpreis-API
 // Fuer eigenen Key bitte hier https://creativecommons.tankerkoenig.de
 // registrieren.
 class TankerkoenigWrapper
 {
 private:
-    GasStationInfo gasStations[3];//tankstellen
+    GasStationInfo gasStations[DimGasStations];//tankstellen
     string key;
     bool ParseJsonForDetailrequest(string &jsonData);
     bool ParseJsonForPrices(string &jsonData);
