@@ -35,8 +35,6 @@ void loop(void)
 {
   u8g2_prepare();
 
-  showLineHeader();
-
   u8g2.sendBuffer();
   delay(1000);
   tasterGedrueckt = false;
@@ -91,6 +89,8 @@ void PrintPrices()
   u8g2.printf("%s\n", gasStation.PrintName());
   u8g2.printf("%10s: %1.4f\n", "e5", gasStation.e5);
   u8g2.printf("%10s: %1.4f\n", "diesel", gasStation.diesel);
+  u8g2.sendBuffer();
+  delay(1000);
 }
 
 void startWiFi()
@@ -127,11 +127,5 @@ void u8g2_prepare(void)
   u8g2.setFontDirection(0);
   u8g2.clearBuffer(); // clear the internal memory once
   u8g2.setFontMode(1);
-}
-
-void showLineHeader()
-{
   u8g2.setCursor(0, 0);
-
-  u8g2.printf("%6s | %6s | %6s", "Time", "e10", "diesel");
 }
