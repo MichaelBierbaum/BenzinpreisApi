@@ -50,6 +50,7 @@ void setup_OLED()
   displayHeight = u8g2.getDisplayHeight();
   displayWidth = u8g2.getDisplayWidth();
   Serial.print("displayHeight: "); Serial.println(displayHeight);
+  Serial.print("displayWidth : "); Serial.println(displayWidth);
   pos = new Pos(0, 0, displayHeight);
 }
 
@@ -80,9 +81,17 @@ void UpdatePrices()
   string jsonData = tankerkoenig.GetJsonForUrl(url.c_str());
   Serial.println(jsonData.c_str());
   tankerkoenig.ParseJsonForPrices(jsonData);
-  Serial.println(tankerkoenig.PrintPrices(displayWidth));
+  PrintPrices();
 }
 
+void PrintPrices()
+{
+  GasStationInfo gasStation = tankerkoenig.GetGasStation(0);
+
+  u8g2.printf("%s\n", gasStation.PrintName());
+  u8g2.printf("%10s: %1.4f\n", "e5", gasStation.e5);
+  u8g2.printf("%10s: %1.4f\n", "diesel", gasStation.diesel);
+}
 
 void startWiFi()
 {

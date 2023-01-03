@@ -198,13 +198,10 @@ string TankerkoenigWrapper::CreateUrlForDetailrequest(const char *gasStationID)
     return buffUrl;
 }
 
-const char* TankerkoenigWrapper::PrintPrices(int displayWidth)
+GasStationInfo TankerkoenigWrapper::GetGasStation(int index)
 {
-    char line[displayWidth];
-    snprintf(line, displayWidth,
-        "%s\n%10s: %1.4f\n%10s: %1.4f",
-        gasStations[0].PrintName(),
-        "e5", gasStations[0].e5,
-        "diesel", gasStations[0].diesel);
-    return line;
+    if(index >= DimGasStations)
+        index = DimGasStations-1;
+
+    return gasStations[index];
 }
