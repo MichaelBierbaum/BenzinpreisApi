@@ -198,7 +198,7 @@ string TankerkoenigWrapper::CreateUrlForDetailrequest(const char *gasStationID)
     return buffUrl;
 }
 
-GasStationInfo TankerkoenigWrapper::GetGasStation(int index)
+GasStationInfo& TankerkoenigWrapper::GetGasStation(int index)
 {
     if(index >= DimGasStations)
         index = DimGasStations-1;

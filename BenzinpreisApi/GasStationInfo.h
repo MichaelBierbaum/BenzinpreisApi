@@ -32,6 +32,7 @@ public:
     double GetLng(){return lng;}
     string GetId(){return id;}
     const char* PrintName();
+    const char* PrintBrand();
     
     GasStationInfo(
         string id = "",

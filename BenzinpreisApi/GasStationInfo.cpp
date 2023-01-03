@@ -5,6 +5,11 @@ const char *GasStationInfo::PrintName()
     return this->name.c_str();
 }
 
+const char *GasStationInfo::PrintBrand()
+{
+    return this->brand.c_str();
+}
+
 GasStationInfo::GasStationInfo(
     string id,
     string name,

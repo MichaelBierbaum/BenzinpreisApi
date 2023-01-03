@@ -14,6 +14,7 @@ TankerkoenigWrapper tankerkoenig(tankerkoenig_api_key);
 const int BUTTON_PIN = 18;
 int displayHeight = 0, displayWidth = 0;
 volatile bool tasterGedrueckt = false;
+volatile int indexGasStation = 0;
 
 void setup(void)
 {
@@ -35,9 +36,40 @@ void loop(void)
 {
   u8g2_prepare();
 
-  u8g2.sendBuffer();
+  PrintPrices(tankerkoenig.GetGasStation(indexGasStation));
+
   delay(1000);
   tasterGedrueckt = false;
+}
+
+void u8g2_prepare(void)
+{
+  u8g2.setFont(u8g2_font_6x10_tf);
+  //u8g2.setFont(u8g2_font_u8glib_4_tf);
+  u8g2.setFontRefHeightExtendedText();
+  u8g2.setDrawColor(1);
+  u8g2.setFontPosTop();
+  u8g2.setFontDirection(0);
+  u8g2.clearBuffer(); // clear the internal memory once
+  u8g2.setFontMode(1);
+  u8g2.setCursor(0, 0);
+}
+
+void PrintPrices(GasStationInfo &gasStation)
+{
+  pos->SetPosToLineNr(0);
+  u8g2.setCursor(pos->GetX(), pos->GetY());
+  u8g2.printf("%s\n", gasStation.PrintBrand());
+
+  pos->SetPosToLineNr(1);
+  u8g2.setCursor(pos->GetX(), pos->GetY());
+  u8g2.printf("%10s: %1.4f\n", "e5", gasStation.e5);
+
+  pos->SetPosToLineNr(2);
+  u8g2.setCursor(pos->GetX(), pos->GetY());
+  u8g2.printf("%10s: %1.4f\n", "diesel", gasStation.diesel);
+
+  u8g2.sendBuffer();
 }
 
 void setup_OLED()
@@ -68,8 +100,9 @@ void OnPushButton()
     Serial.println(tankerkoenig.CreateUrlForRadiusSearch().c_str());
     Serial.println(tankerkoenig.CreateUrlForPrices().c_str());
 
+    indexGasStation = (indexGasStation + 1) % tankerkoenig.GetDimGasStations();
+
     return;
-    UpdatePrices();
   }
 }
 
@@ -79,18 +112,6 @@ void UpdatePrices()
   string jsonData = tankerkoenig.GetJsonForUrl(url.c_str());
   Serial.println(jsonData.c_str());
   tankerkoenig.ParseJsonForPrices(jsonData);
-  PrintPrices();
-}
-
-void PrintPrices()
-{
-  GasStationInfo gasStation = tankerkoenig.GetGasStation(0);
-
-  u8g2.printf("%s\n", gasStation.PrintName());
-  u8g2.printf("%10s: %1.4f\n", "e5", gasStation.e5);
-  u8g2.printf("%10s: %1.4f\n", "diesel", gasStation.diesel);
-  u8g2.sendBuffer();
-  delay(1000);
 }
 
 void startWiFi()
@@ -115,17 +136,4 @@ void startWiFi()
   Serial.println("");
   Serial.print("WiFi connected with IP address: ");
   Serial.println(WiFi.localIP());
-}
-
-void u8g2_prepare(void)
-{
-  u8g2.setFont(u8g2_font_6x10_tf);
-  //u8g2.setFont(u8g2_font_u8glib_4_tf);
-  u8g2.setFontRefHeightExtendedText();
-  u8g2.setDrawColor(1);
-  u8g2.setFontPosTop();
-  u8g2.setFontDirection(0);
-  u8g2.clearBuffer(); // clear the internal memory once
-  u8g2.setFontMode(1);
-  u8g2.setCursor(0, 0);
 }

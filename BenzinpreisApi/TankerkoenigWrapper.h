@@ -30,7 +30,8 @@ public:
     string CreateUrlForRadiusSearch(Spritsorte type = all, double radius = 1.0);
     string CreateUrlForDetailrequest(const char *gasStationID = "");
     string CreateUrlForPrices();
-    GasStationInfo GetGasStation(int index);
+    GasStationInfo& GetGasStation(int index);
+    int GetDimGasStations(){return DimGasStations;}
 };
 
 
