@@ -16,21 +16,21 @@ class TankerkoenigWrapper
 private:
     GasStationInfo gasStations[DimGasStations];//tankstellen
     string key;
-    bool ParseJsonForDetailrequest(string &jsonData);
-    bool ParseJsonForPrices(string &jsonData);
 
 public:
     enum Spritsorte{e5, e10, diesel, all};
     string Sorten[4] = {"e5", "e10", "diesel", "all"};
 
 public:
-    string GetJson();
-    bool UpdatePrices(string &jsonData);
+    string GetJsonForUrl(const char* url);
+    bool ParseJsonForDetailrequest(string &jsonData);
+    bool ParseJsonForPrices(string &jsonData);
     TankerkoenigWrapper(const char *tankerkoenig_api_key);
     ~TankerkoenigWrapper();
     string CreateUrlForRadiusSearch(Spritsorte type = all, double radius = 1.0);
     string CreateUrlForDetailrequest(const char *gasStationID = "");
     string CreateUrlForPrices();
+    const char* PrintPrices();
 };
 
 

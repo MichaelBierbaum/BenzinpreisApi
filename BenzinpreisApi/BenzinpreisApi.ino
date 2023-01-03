@@ -74,10 +74,13 @@ void OnPushButton()
 
 void UpdatePrices()
 {
-  string jsonData = tankerkoenig.GetJson();
+  string url = tankerkoenig.CreateUrlForPrices();
+  string jsonData = tankerkoenig.GetJsonForUrl(url.c_str());
   Serial.println(jsonData.c_str());
-  tankerkoenig.UpdatePrices(jsonData);
+  tankerkoenig.ParseJsonForPrices(jsonData);
+  Serial.println(tankerkoenig.PrintPrices());
 }
+
 
 void startWiFi()
 {

@@ -50,11 +50,10 @@ HTTPClient http;
 
 #include <ArduinoJson.h>
 
-string TankerkoenigWrapper::GetJson()
+string TankerkoenigWrapper::GetJsonForUrl(const char* url)
 {
     string jsonData = "E";
-    string url = CreateUrlForDetailrequest();
-    http.begin(url.c_str());
+    http.begin(url);
     int httpCode = http.GET();
     if(httpCode == 200){
         jsonData = http.getString().c_str();
@@ -130,10 +129,6 @@ bool TankerkoenigWrapper::ParseJsonForPrices(string &jsonData)
     for(int i = 0; i < DimGasStations; ++i)
         ParseJsonForPricesForItem(prices, gasStations[i]);
 }
-bool TankerkoenigWrapper::UpdatePrices(string &jsonData)
-{
-    return ParseJsonForDetailrequest(jsonData);
-}
 
 string TankerkoenigWrapper::CreateUrlForPrices()
 {
@@ -202,4 +197,9 @@ string TankerkoenigWrapper::CreateUrlForDetailrequest(const char *gasStationID)
         id,
         key.c_str());
     return buff;
+}
+
+const char* TankerkoenigWrapper::PrintPrices()
+{
+    return "TankerkoenigWrapper::PrintPrices()";
 }
