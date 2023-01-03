@@ -8,7 +8,7 @@ GasStationInfo::GasStationInfo(
         string place,
         double lat,
         double lng,
-        int houseNumber,
+        string houseNumber,
         int postCode
         )
 {
@@ -25,11 +25,11 @@ GasStationInfo::GasStationInfo(
 
 GasStationInfo::GasStationInfo(const GasStationInfo &src)
 {
-    this->id = src.id;
-    this->name = src.name;
-    this->brand = src.brand;
-    this->street = src.street;
-    this->place = src.place;
+    this->id = src.id.c_str();
+    this->name = src.name.c_str();
+    this->brand = src.brand.c_str();
+    this->street = src.street.c_str();
+    this->place = src.place.c_str();
     this->lat = src.lat;
     this->lng = src.lng;
     this->dist = src.dist;
@@ -37,7 +37,7 @@ GasStationInfo::GasStationInfo(const GasStationInfo &src)
     this->e5 = src.e5;
     this->e10 = src.e10;
     this->isOpen = src.isOpen;
-    this->houseNumber = src.houseNumber;
+    this->houseNumber = src.houseNumber.c_str();
     this->postCode = src.postCode;
 }
 

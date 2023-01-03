@@ -21,7 +21,7 @@ private:
     double e5;//Preis in EUR
     double e10;//Preis in EUR
     bool isOpen;
-    int houseNumber;
+    string houseNumber;
     int postCode;//PLZ
     
 public:
@@ -37,7 +37,7 @@ public:
         string place = "",
         double lat = 0.0,
         double lng = 0.0,
-        int houseNumber = 0,
+        string houseNumber = "",
         int postCode = 0
         );
     //CopyCtor:

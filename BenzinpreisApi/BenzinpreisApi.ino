@@ -6,23 +6,10 @@ u8g2_uint_t offset;
 Pos *pos;
 
 #include <WiFi.h>
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
 #include "credentials.h"
-
 #include "TankerkoenigWrapper.h"
-GasStationInfo RaiBa(
-  /*id*/"2599dfbd-54c1-473d-a0df-a1538ba120b6",
-  /*name*/"Raiffeisen Lagerhaus GmbH Gaukönigshofen",
-  /*brand*/"ZG Raiffeisen Energie",
-  /*street*/"Raiffeisenplatz",
-  /*place*/"Gaukönigshofen",
-  /*lat*/49.634,
-  /*lng*/10.0065,
-  /*houseNumber*/3,
-  /*postCode*/97253
-  );
-TankerkoenigWrapper tankerkoenig(RaiBa, tankerkoenig_api_key);
+
+TankerkoenigWrapper tankerkoenig(tankerkoenig_api_key);
 
 const int BUTTON_PIN = 18;
 volatile bool tasterGedrueckt = false;
@@ -40,7 +27,7 @@ void setup(void)
   UpdatePrices();
 
   delay(1000);
-  Serial.print("setup abgeschlossen");
+  Serial.println("setup abgeschlossen");
 }
 
 void loop(void)
@@ -75,14 +62,18 @@ void OnPushButton()
   if (!tasterGedrueckt)
   {
     tasterGedrueckt = true;
+
+    Serial.println(tankerkoenig.CreateUrlForDetailrequest().c_str());
+    Serial.println(tankerkoenig.CreateUrlForRadiusSearch().c_str());
+    Serial.println(tankerkoenig.CreateUrlForPrices().c_str());
+
+    return;
     UpdatePrices();
   }
 }
 
 void UpdatePrices()
 {
-  Serial.println(tankerkoenig.CreateUrlForDetailrequest().c_str()); return;
-
   string jsonData = tankerkoenig.GetJson();
   Serial.println(jsonData.c_str());
   tankerkoenig.UpdatePrices(jsonData);
