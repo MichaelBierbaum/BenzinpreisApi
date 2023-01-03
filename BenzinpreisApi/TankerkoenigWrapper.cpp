@@ -10,7 +10,7 @@ const char* ID_Ochsenfurt_Agip = "bfa946e7-e48a-47e6-8b34-187d684fa9e8";
 const char* ID_Ochsenfurt_Wengel = "a3c6f7ff-8bff-449a-a2b0-d13022b8f1e4";
 const char* ID_Reichenberg_Wengel = "3261710a-e951-4494-9cc1-2bd717a273c2";
 GasStationInfo RaiBa(
-            /*id*/"2599dfbd-54c1-473d-a0df-a1538ba120b6",
+            /*id*/ID_Gaukoenigshofen_ZG,
             /*name*/"Raiffeisen Lagerhaus GmbH Gaukönigshofen",
             /*brand*/"ZG Raiffeisen Energie",
             /*street*/"Raiffeisenplatz",
@@ -20,7 +20,7 @@ GasStationInfo RaiBa(
             /*houseNumber*/"3",
             /*postCode*/97253);
 GasStationInfo ECenter(
-			/*id*/"932a8c52-ef25-40b8-8d7a-ad323bb78e0d",
+			/*id*/ID_Ochsenfurt_ECenter,
 			/*name*/"Tankstelle am E-Center",
 			/*brand*/"E Center",
 			/*street*/"Dr.-Martin-Luther-Str.",
@@ -29,11 +29,21 @@ GasStationInfo ECenter(
 			/*lng*/10.066862,
 			/*houseNumber*/"6",
 			/*postCode*/97199);
+GasStationInfo Herm(
+            /*id*/ID_Giebelstadt_Herm,
+			/*name*/"Giebelstadt",
+			/*brand*/"HERM",
+			/*street*/"Mergentheimer Str.",
+			/*place*/"Giebelstadt",
+			/*lat*/49.64857,
+			/*lng*/9.94803,
+			/*houseNumber*/"46",
+			/*postCode*/97232);
 
 #include <stdio.h>//fuer snprintf
 #include <string.h>//fuer strcmp
 
-char buff[200];
+char buff[300];
 
 #include <HTTPClient.h>
 HTTPClient http;
@@ -92,6 +102,39 @@ bool TankerkoenigWrapper::ParseJsonForDetailrequest(string &jsonData)
     return true;
 }
 
+bool TankerkoenigWrapper::ParseJsonForPrices(string &jsonData)
+{
+    const size_t capacity = JSON_OBJECT_SIZE(3) + 4*JSON_OBJECT_SIZE(4) + 370;
+    DynamicJsonBuffer jsonBuffer(capacity);
+
+    const char* json = jsonData.c_str();
+
+    JsonObject& root = jsonBuffer.parseObject(json);
+
+    bool ok = root["ok"]; // true
+    const char* license = root["license"]; // "CC BY 4.0 -  https://creativecommons.tankerkoenig.de"
+    const char* data = root["data"]; // "MTS-K"
+
+    JsonObject& prices = root["prices"];
+
+    JsonObject& pricesItem1 = prices["932a8c52-ef25-40b8-8d7a-ad323bb78e0d"];
+    const char* pricesItem1_status = pricesItem1["status"]; // "open"
+    float pricesItem1_e5 = pricesItem1["e5"]; // 1.759
+    float pricesItem1_e10 = pricesItem1["e10"]; // 1.699
+    float pricesItem1_diesel = pricesItem1["diesel"]; // 1.809
+
+    JsonObject& pricesItem2 = prices["2599dfbd-54c1-473d-a0df-a1538ba120b6"];
+    const char* pricesItem2_status = pricesItem2["status"]; // "open"
+    float pricesItem2_e5 = pricesItem2["e5"]; // 1.769
+    float pricesItem2_e10 = pricesItem2["e10"]; // 1.719
+    float pricesItem2_diesel = pricesItem2["diesel"]; // 1.829
+
+    JsonObject& pricesItem3 = prices["2de4b5a8-b37e-4c39-9de9-e0564a432721"];
+    const char* pricesItem3_status = pricesItem3["status"]; // "open"
+    float pricesItem3_e5 = pricesItem3["e5"]; // 1.789
+    float pricesItem3_e10 = pricesItem3["e10"]; // 1.729
+    float pricesItem3_diesel = pricesItem3["diesel"]; // 1.839
+}
 bool TankerkoenigWrapper::UpdatePrices(string &jsonData)
 {
     return ParseJsonForDetailrequest(jsonData);
@@ -112,7 +155,10 @@ string TankerkoenigWrapper::CreateUrlForPrices()
 
 TankerkoenigWrapper::TankerkoenigWrapper(const char *tankerkoenig_api_key)
 {
-    gasStation = RaiBa;
+    gasStations[0] = RaiBa;
+    gasStations[1] = ECenter;
+    gasStations[2] = Herm;
+
     key = tankerkoenig_api_key;
 };
 
@@ -126,10 +172,12 @@ string TankerkoenigWrapper::CreateUrlForRadiusSearch(Spritsorte type, double rad
     //example:
     //return "https://creativecommons.tankerkoenig.de/json/list.php?lat=49.6339&lng=10.00658&rad=2.0&sort=dist&type=all&apikey=00000000-0000-0000-0000-000000000002";
     
+    double lat = gasStations[0].GetLat();
+    double lng = gasStations[0].GetLng();
     snprintf(buff, sizeof(buff), 
         "https://creativecommons.tankerkoenig.de/json/list.php?lat=%f&lng=%f&rad=%f&sort=%s&type=%s&apikey=%s",
-        gasStation.GetLat(),
-        gasStation.GetLng(),
+        lat,
+        lng,
         radius,
         "dist", //price, dist
         Sorten[type].c_str(),
@@ -143,8 +191,12 @@ string TankerkoenigWrapper::CreateUrlForDetailrequest(const char *gasStationID)
     const char* id;
     if(strcmp(gasStationID, "") != 0)
         id = gasStationID;
-    else if(gasStation.GetId().empty() == false)
-        id = gasStation.GetId().c_str();
+    else if(gasStations[0].GetId().empty() == false)
+        id = gasStations[0].GetId().c_str();
+    else if(gasStations[1].GetId().empty() == false)
+        id = gasStations[1].GetId().c_str();
+    else if(gasStations[2].GetId().empty() == false)
+        id = gasStations[2].GetId().c_str();
     else
         id = ID_Gaukoenigshofen_ZG;
 

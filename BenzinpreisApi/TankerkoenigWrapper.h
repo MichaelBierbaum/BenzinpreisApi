@@ -12,9 +12,10 @@ using std::string;
 class TankerkoenigWrapper
 {
 private:
-    GasStationInfo gasStation;//tankstelle
+    GasStationInfo gasStations[3];//tankstelle
     string key;
     bool ParseJsonForDetailrequest(string &jsonData);
+    bool ParseJsonForPrices(string &jsonData);
 
 public:
     enum Spritsorte{e5, e10, diesel, all};
