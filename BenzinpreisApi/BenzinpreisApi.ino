@@ -10,13 +10,11 @@ TankerkoenigWrapper tankerkoenig(tankerkoenig_api_key);
 
 #include <NTPClient.h>
 #include <WiFiUdp.h>
-  #define HOUR_OF_BUILD 19
-  #define MINUTE_OF_BUILD 59
-  #define NTP_OFFSET   (HOUR_OF_BUILD*60*60 + MINUTE_OF_BUILD*60 + 60)// In seconds     hh*60*60 + mm*60 + ss
-  #define NTP_INTERVAL 60 * 1000    // In miliseconds
-  #define NTP_ADDRESS  "de.pool.ntp.org"
+  #define UTCTIMEOFFSET 1 //UTC + 1 = Berlin
+  #define NTP_OFFSET   (UTCTIMEOFFSET*60*60)// In seconds     hh*60*60
+  #define NTP_UPDATEINTERVAL 60 * 1000    // In miliseconds
   WiFiUDP ntpUDP;
-  NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
+  NTPClient timeClient(ntpUDP, "de.pool.ntp.org", NTP_OFFSET, NTP_UPDATEINTERVAL);
   string formattedTime;
 
 const int BUTTON_PIN = 18;
