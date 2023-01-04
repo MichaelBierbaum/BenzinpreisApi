@@ -205,3 +205,25 @@ GasStationInfo& TankerkoenigWrapper::GetGasStation(int index)
 
     return gasStations[index];
 }
+
+GasStationInfo TankerkoenigWrapper::getGasStationWithMinE5()
+{
+    int min = 0;
+    for(int i = 1; i < DimGasStations; ++i)
+    {
+        if(gasStations[i].e5 < gasStations[min].e5)
+            min = i;
+    }
+    return gasStations[min];
+}
+
+GasStationInfo TankerkoenigWrapper::getGasStationWithMaxE5()
+{
+    int max = 0;
+    for(int i = 1; i < DimGasStations; ++i)
+    {
+        if(gasStations[i].e5 > gasStations[max].e5)
+            max = i;
+    }
+    return gasStations[max];
+}

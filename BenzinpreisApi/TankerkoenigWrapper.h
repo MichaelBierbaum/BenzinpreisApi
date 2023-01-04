@@ -32,6 +32,8 @@ public:
     string CreateUrlForPrices();
     GasStationInfo& GetGasStation(int index);
     int GetDimGasStations(){return DimGasStations;}
+    GasStationInfo getGasStationWithMinE5();
+    GasStationInfo getGasStationWithMaxE5();
 };
 
 
