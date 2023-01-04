@@ -11,10 +11,6 @@ TankerkoenigWrapper tankerkoenig(tankerkoenig_api_key);
 const int BUTTON_PIN = 18;
 int displayHeight = 0, displayWidth = 0;
 volatile bool tasterGedrueckt = false;
-volatile int indexGasStation = 0;
-double minE5, minDiesel;
-double maxE5, maxDiesel;
-GasStationInfo minGasStation, maxGasStation;
 void setup(void)
 {
   Serial.begin(115200);
@@ -34,9 +30,13 @@ void setup(void)
 void loop(void)
 {
   u8g2_prepare();
+  if(tasterGedrueckt)
+  {
+    UpdatePrices();
+    tasterGedrueckt = false;
+  }
   PrintPrices();
   delay(1000);
-  tasterGedrueckt = false;
 }
 
 void u8g2_prepare(void)
@@ -51,12 +51,11 @@ void u8g2_prepare(void)
   u8g2.setCursor(0, 0);
 }
 
-string scrollingBrand, scrollingMinBrand, scrollingMaxBrand;
+string scrollingBrand;
+GasStationInfo gasStation;
 void PrintPrices()
 {
-  ScrollBrand(scrollingBrand, minGasStation);
-  //ScrollBrand(scrollingMinBrand, minGasStation);
-  //ScrollBrand(scrollingMaxBrand, maxGasStation);
+  ScrollBrand();
 
   int maxCharHeight = u8g2.getMaxCharHeight();
   int x = 0, y = 0, line = 0;
@@ -64,13 +63,9 @@ void PrintPrices()
   u8g2.printf("%s", scrollingBrand.c_str());
 
   ++line;
-  u8g2.setCursor(x, y + line*maxCharHeight);
-  u8g2.printf("%6s|%6s %s", "Benzin", "Diesel", "Name");
-
   ++line;
   u8g2.setCursor(x, y + line*maxCharHeight);
-  GasStationInfo gasStation = minGasStation;
-  u8g2.printf("% 1.3f|% 1.3f %s", gasStation.e5, gasStation.diesel, gasStation.PrintBrand());
+  u8g2.printf("%6s|%6s %s", "Benzin", "Diesel", "Name");
 
   for(int i = 0; i < DimGasStations; ++i)
   {
@@ -83,14 +78,13 @@ void PrintPrices()
   u8g2.sendBuffer();
 }
 
-void ScrollBrand(string &brand, GasStationInfo &station)
+void ScrollBrand()
 {
-  Serial.printf("brand  : %s", brand.c_str());Serial.println();
-  Serial.printf("station: %s", station.PrintBrand());Serial.println();
-  if(brand.empty() || brand.length() < 1)
-    brand = station.PrintBrand();
+  gasStation = tankerkoenig.GetGasStation(0);
+  if(scrollingBrand.empty() || scrollingBrand.length() < 1)
+    scrollingBrand = gasStation.PrintBrand();
   else
-    brand = brand.substr(1);
+    scrollingBrand = scrollingBrand.substr(1);
 }
 
 void setup_OLED()
@@ -121,8 +115,6 @@ void OnPushButton()
     Serial.println(tankerkoenig.CreateUrlForRadiusSearch().c_str());
     Serial.println(tankerkoenig.CreateUrlForPrices().c_str());
 
-    indexGasStation = (indexGasStation + 1) % tankerkoenig.GetDimGasStations();
-
     return;
   }
 }
@@ -133,14 +125,7 @@ void UpdatePrices()
   string jsonData = tankerkoenig.GetJsonForUrl(url.c_str());
   Serial.println(jsonData.c_str());
   tankerkoenig.ParseJsonForPrices(jsonData);
-  
-  minGasStation = tankerkoenig.getGasStationWithMinE5();
-  minE5 = minGasStation.e5;
-  minDiesel = minGasStation.diesel;
-
-  maxGasStation = tankerkoenig.getGasStationWithMaxE5();
-  maxE5 = maxGasStation.e5;
-  maxDiesel = maxGasStation.diesel;
+  tankerkoenig.SortGasStations();
 }
 
 void startWiFi()

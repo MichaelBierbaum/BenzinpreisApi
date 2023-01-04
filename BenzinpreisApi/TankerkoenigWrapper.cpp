@@ -206,24 +206,19 @@ GasStationInfo& TankerkoenigWrapper::GetGasStation(int index)
     return gasStations[index];
 }
 
-GasStationInfo TankerkoenigWrapper::getGasStationWithMinE5()
+void TankerkoenigWrapper::SortGasStations()
 {
-    int min = 0;
-    for(int i = 1; i < DimGasStations; ++i)
-    {
-        if(gasStations[i].e5 < gasStations[min].e5)
-            min = i;
+    for(int i = 0; i < DimGasStations; ++i)
+    {        
+        for(int j = i+1; j < DimGasStations; ++j)
+        {
+            if(gasStations[j].e5 < gasStations[i].e5)
+            {
+                GasStationInfo temp = gasStations[i];//save to shift
+                gasStations[i] = gasStations[j];//shift station j to forward to i
+                gasStations[j] = temp;//shift temp backward to pos j
+            }
+        }
     }
-    return gasStations[min];
 }
 
-GasStationInfo TankerkoenigWrapper::getGasStationWithMaxE5()
-{
-    int max = 0;
-    for(int i = 1; i < DimGasStations; ++i)
-    {
-        if(gasStations[i].e5 > gasStations[max].e5)
-            max = i;
-    }
-    return gasStations[max];
-}
