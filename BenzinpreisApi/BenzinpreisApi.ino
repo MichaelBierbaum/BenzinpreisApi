@@ -4,9 +4,20 @@ u8g2_uint_t offset;
 
 #include <WiFi.h>
 #include "credentials.h"
-#include "TankerkoenigWrapper.h"
 
+#include "TankerkoenigWrapper.h"
 TankerkoenigWrapper tankerkoenig(tankerkoenig_api_key);
+
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+  #define HOUR_OF_BUILD 19
+  #define MINUTE_OF_BUILD 59
+  #define NTP_OFFSET   (HOUR_OF_BUILD*60*60 + MINUTE_OF_BUILD*60 + 60)// In seconds     hh*60*60 + mm*60 + ss
+  #define NTP_INTERVAL 60 * 1000    // In miliseconds
+  #define NTP_ADDRESS  "de.pool.ntp.org"
+  WiFiUDP ntpUDP;
+  NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
+  string formattedTime;
 
 const int BUTTON_PIN = 18;
 int displayHeight = 0, displayWidth = 0;
@@ -22,6 +33,8 @@ void setup(void)
   startWiFi();
 
   UpdatePrices();
+
+  timeClient.begin();
 
   delay(1000);
   Serial.println("setup abgeschlossen");
@@ -63,6 +76,9 @@ void PrintPrices()
   u8g2.printf("%s", scrollingBrand.c_str());
 
   ++line;
+  u8g2.setCursor(10, y + line*maxCharHeight);
+  u8g2.printf("%s", formattedTime.c_str());
+
   ++line;
   u8g2.setCursor(x, y + line*maxCharHeight);
   u8g2.printf("%6s|%6s %s", "Benzin", "Diesel", "Name");
@@ -126,6 +142,17 @@ void UpdatePrices()
   Serial.println(jsonData.c_str());
   tankerkoenig.ParseJsonForPrices(jsonData);
   tankerkoenig.SortGasStations();
+  SetFormattedTime();
+}
+
+void SetFormattedTime()
+{
+  timeClient.update();
+  formattedTime = timeClient.getFormattedTime().c_str();
+  
+  Serial.print("getHours  : "); Serial.println(timeClient.getHours());
+  Serial.print("getMinutes: "); Serial.println(timeClient.getMinutes());
+  Serial.print("getSeconds: "); Serial.println(timeClient.getSeconds());
 }
 
 void startWiFi()
